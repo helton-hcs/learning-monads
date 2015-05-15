@@ -1,7 +1,5 @@
 package com.helton_hcs.monads;
 
-import com.helton_hcs.monads.factories.MonadFactory;
-
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -15,11 +13,19 @@ public class OnDemand<T> implements Monad {
         this.function = function;
     }
 
+    public static <T> OnDemand<T> unit(Supplier<T> function) {
+        return new OnDemand<>(function);
+    }
+
+    public static <T> OnDemand<T> unit(T staticValue) {
+        return new OnDemand<>(() -> staticValue);
+    }
+
     public T call() {
         return function.get();
     }
 
-    public static <A, R> OnDemand<R> applyFunction(OnDemand<A> onDemand, Function<A, R> function) {
+    private static <A, R> OnDemand<R> internalBind(OnDemand<A> onDemand, Function<A, R> function) {
         return new OnDemand<R>(() -> {
             A unwrappedValue = onDemand.call();
             R result = function.apply(unwrappedValue);
@@ -27,7 +33,7 @@ public class OnDemand<T> implements Monad {
         });
     }
 
-    public static <A, R> OnDemand<R> applySpecialFunction(OnDemand<A> onDemand, Function<A, OnDemand<R>> function) {
+    public static <A, R> OnDemand<R> bind(OnDemand<A> onDemand, Function<A, OnDemand<R>> function) {
         return new OnDemand<R>(() -> {
             A unwrappedValue = onDemand.call();
             OnDemand<R> result = function.apply(unwrappedValue);
@@ -36,6 +42,6 @@ public class OnDemand<T> implements Monad {
     }
 
     public static OnDemand<Long> addOne(OnDemand<Long> onDemand) {
-        return applyFunction(onDemand, i -> i + 1);
+        return internalBind(onDemand, i -> i + 1);
     }
 }

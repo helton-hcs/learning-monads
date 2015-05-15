@@ -1,7 +1,6 @@
 package tests.com.helton_hcs.monads;
 
 import com.helton_hcs.monads.OnDemand;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -35,8 +34,7 @@ public class OnDemandTest {
         assertThat(expected, is(result));
     }
 
-    @Test
-    @Ignore
+    @Test(Ignore=true)
     public void shouldBeAbleToConvertAnTypeValueToAnother() {
         /*OnDemand<Double> doubleValue = OnDemand.unit(3.14);
         OnDemand<Integer> integerValue = OnDemand.bind(doubleValue, d -> d.intValue());
